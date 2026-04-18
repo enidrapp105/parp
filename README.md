@@ -7,9 +7,9 @@ so go check him out at https://www.youtube.com/@chrisrouck
 
 To run clone the repository and run
 Install dependencies:
-    Make install-deps
+    ``Make install-deps``
 Then run:
-    Make
+    ``Make``
 and
-    ./parp -h
+    ``./parp -h``
 for usage information
