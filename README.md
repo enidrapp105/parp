@@ -5,7 +5,8 @@ and basically reimplemented paex_record.c but for POSIX
 I also referenced @chrisrouck on Youtube for the visualizer 
 so go check him out at https://www.youtube.com/@chrisrouck
 
-To run clone the repository and run
+## To run:
+clone the repository and run
 Install dependencies:
     ``Make install-deps``
 Then run:
