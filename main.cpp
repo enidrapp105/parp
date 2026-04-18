@@ -113,8 +113,13 @@ static void *threadFunctionReadFromRawFile(void *ptr) {
 
       /* By using PaUtil_GetRingBufferWriteRegions,
       we can write directly into the ring buffer */
-      PaUtil_GetRingBufferWriteRegions(&pData->ringBuffer, elementsInBuffer,
-                                       ptr + 0, sizes + 0, ptr + 1, sizes + 1);
+      PaUtil_GetRingBufferWriteRegions(&pData->ringBuffer,
+                                       elementsInBuffer,
+                                       ptr + 0,
+                                       sizes + 0,
+                                       ptr + 1,
+                                       sizes + 1
+                                       );
 
       if (!feof(pData->file)) {
         ring_buffer_size_t itemsReadFromFile = 0;
@@ -182,10 +187,12 @@ static unsigned NextPowerOf2(unsigned val) {
   return ++val;
 }
 
-static int recordCallback(const void *inputBuffer, void *outputBuffer,
+static int recordCallback(const void *inputBuffer,
+                          void *outputBuffer,
                           unsigned long framesPerBuffer,
                           const PaStreamCallbackTimeInfo *timeInfo,
-                          PaStreamCallbackFlags statusFlags, void *userData) {
+                          PaStreamCallbackFlags statusFlags,
+                          void *userData) {
   (void)outputBuffer;
   paTestData *data = (paTestData *)userData;
 
@@ -219,16 +226,20 @@ static int recordCallback(const void *inputBuffer, void *outputBuffer,
     }
   }
   data->frameIndex +=
-      PaUtil_WriteRingBuffer(&data->ringBuffer, rptr, elementsToWrite);
+      PaUtil_WriteRingBuffer(&data->ringBuffer,
+                             rptr,
+                             elementsToWrite);
   fflush(stdout);
 
   return paContinue;
 }
 
-static int playCallback(const void *inputBuffer, void *outputBuffer,
+static int playCallback(const void *inputBuffer,
+                        void *outputBuffer,
                         unsigned long framesPerBuffer,
                         const PaStreamCallbackTimeInfo *timeInfo,
-                        PaStreamCallbackFlags statusFlags, void *userData) {
+                        PaStreamCallbackFlags statusFlags,
+                        void *userData) {
 
   paTestData *data = (paTestData *)userData;
 
@@ -294,17 +305,27 @@ static void printDevices() {
            "\tmaxOutputChannels: %d\n"
            "\tdefaultSampleRate: %f\n"
            "\tdefaultLowInputLatency: %f\n",
-           i, deviceInfo->name, deviceInfo->maxInputChannels,
-           deviceInfo->maxOutputChannels, deviceInfo->defaultSampleRate,
+           i,
+           deviceInfo->name,
+           deviceInfo->maxInputChannels,
+           deviceInfo->maxOutputChannels,
+           deviceInfo->defaultSampleRate,
            deviceInfo->defaultLowInputLatency);
   }
 }
 
-PaError RecordSound(PaStreamParameters inputParameters, paTestData *data,
+PaError RecordSound(PaStreamParameters inputParameters,
+                    paTestData *data,
                     PaError err) {
   PaStream *stream;
-  err = Pa_OpenStream(&stream, &inputParameters, NULL, SAMPLE_RATE,
-                      FRAMES_PER_BUFFER, paClipOff, recordCallback, data);
+  err = Pa_OpenStream(&stream,
+                      &inputParameters,
+                      NULL,
+                      SAMPLE_RATE,
+                      FRAMES_PER_BUFFER,
+                      paClipOff,
+                      recordCallback, 
+                      data);
 
   unsigned delayCntr;
   checkErr(err);
@@ -334,13 +355,19 @@ PaError RecordSound(PaStreamParameters inputParameters, paTestData *data,
   data->file = 0;
   return err;
 }
-PaError PlaySound(PaStreamParameters outputParameters, paTestData *data,
+PaError PlaySound(PaStreamParameters outputParameters,
+                  paTestData *data,
                   PaError err) {
   PaStream *stream;
   data->frameIndex = 0;
-  err = Pa_OpenStream(&stream, NULL, /* no input */
-                      &outputParameters, SAMPLE_RATE, FRAMES_PER_BUFFER,
-                      paClipOff, playCallback, data);
+  err = Pa_OpenStream(&stream, 
+                      NULL, /* no input */
+                      &outputParameters,
+                      SAMPLE_RATE, 
+                      FRAMES_PER_BUFFER,
+                      paClipOff, 
+                      playCallback, 
+                      data);
   checkErr(err);
   if (stream) {
     /* Open file again for reading */
@@ -373,8 +400,17 @@ int main(int argc, char *argv[]) {
   bool provided_file = false;
   char *file_name = (char *)calloc(MAX_FILE_NAME, sizeof(char));
 
-  while ((opt = getopt(argc, argv, ":f:rp")) != -1) {
+  while ((opt = getopt(argc, argv, ":f:rph")) != -1) {
     switch (opt) {
+    case 'h':
+      printf("usage: parp [ -p | -r | -h][-f <file_name>]\n"
+             "p:\tplay file\n"
+             "r:\trecord to file(default file_name is a.raw)\n"
+             "h:\t help\n"
+             "f:\t flag to provide name of file to "
+             "record to/play from\n");
+
+      exit(0);
     case 'f':
       if (!provided_file) {
         strncpy(file_name, optarg, MAX_FILE_NAME);
@@ -392,7 +428,7 @@ int main(int argc, char *argv[]) {
       break;
     case ':':
       printf("please provide a file (.raw)\n");
-      exit(0);
+      exit(1);
     case '?':
       printf("unkown option: %c\n", optopt);
       exit(1);
@@ -445,7 +481,9 @@ int main(int argc, char *argv[]) {
   inputParameters.suggestedLatency =
       Pa_GetDeviceInfo(inputDevice)->defaultLowInputLatency;
   if (record) {
-    RecordSound(inputParameters, &data, err);
+    RecordSound(inputParameters,
+                &data,
+                err);
   }
   // playback
   memset(&outputParameters, 0, sizeof(outputParameters));
@@ -456,7 +494,9 @@ int main(int argc, char *argv[]) {
   outputParameters.suggestedLatency =
       Pa_GetDeviceInfo(outputDevice)->defaultLowOutputLatency;
   if (play) {
-    PlaySound(outputParameters, &data, err);
+    PlaySound(outputParameters,
+              &data,
+              err);
   }
   err = Pa_Terminate();
   checkErr(err);
