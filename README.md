@@ -12,7 +12,7 @@ clone the repository and run
 Install dependencies:
 
     sudo apt-get install curl cmake clang pulseaudio libasound-dev libjack-dev
-    make install-deps``
+    make install-deps
 
 Then run:
 
