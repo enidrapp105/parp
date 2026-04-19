@@ -1,0 +1,6 @@
+*.raw
+compile_commands.json
+*.gf
+*.supp
+lib/
+parp
