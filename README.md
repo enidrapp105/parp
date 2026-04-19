@@ -8,8 +8,7 @@ so go check him out at https://www.youtube.com/@chrisrouck
 this currently only plays/records 32-bit encoded raw audio with a sample rate of 44100Hz
 
 ## To run:
-clone the repository and run
-Install dependencies:
+clone the repository install dependencies:
 
     sudo apt-get install curl cmake clang pulseaudio libasound-dev libjack-dev
     make install-deps
