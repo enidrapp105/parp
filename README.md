@@ -10,7 +10,7 @@ clone the repository and run
 Install dependencies:
     ``Make install-deps``
 Then run:
-    ``Make``
+    ``make``
 and
     ``./parp -h``
 for usage information
