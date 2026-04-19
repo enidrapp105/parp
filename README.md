@@ -5,7 +5,7 @@ and basically reimplemented paex_record.c but for POSIX.
 I also referenced @chrisrouck on Youtube for the visualizer 
 so go check him out at https://www.youtube.com/@chrisrouck
 
-this currently only plays/records 32-bit encoded raw audio with a sample rate of 44100Hz
+This currently only plays/records 32-bit encoded raw audio with a sample rate of 44100Hz
 
 ## To run:
 clone the repository install dependencies:
