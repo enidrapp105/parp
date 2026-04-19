@@ -11,10 +11,10 @@ this currently only plays/records 32-bit encoded raw audio with a sample rate of
 clone the repository and run
 Install dependencies:
 
-``sudo apt-get install curl cmake clang pulseaudio libasound-dev libjack-dev``
+    sudo apt-get install curl cmake clang pulseaudio libasound-dev libjack-dev
     
     
-``make install-deps``
+    make install-deps``
 
 Then run:
 
@@ -22,6 +22,6 @@ Then run:
     
 and
 
-``./parp -h``
+    ./parp -h
     
 for usage information
