@@ -8,7 +8,7 @@ so go check him out at https://www.youtube.com/@chrisrouck
 ## To run:
 clone the repository and run
 Install dependencies:
-    ``Make install-deps``
+    ``make install-deps``
 Then run:
     ``make``
 and
