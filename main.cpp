@@ -113,13 +113,8 @@ static void *threadFunctionReadFromRawFile(void *ptr) {
 
       /* By using PaUtil_GetRingBufferWriteRegions,
       we can write directly into the ring buffer */
-      PaUtil_GetRingBufferWriteRegions(&pData->ringBuffer,
-                                       elementsInBuffer,
-                                       ptr + 0,
-                                       sizes + 0,
-                                       ptr + 1,
-                                       sizes + 1
-                                       );
+      PaUtil_GetRingBufferWriteRegions(&pData->ringBuffer, elementsInBuffer,
+                                       ptr + 0, sizes + 0, ptr + 1, sizes + 1);
 
       if (!feof(pData->file)) {
         ring_buffer_size_t itemsReadFromFile = 0;
@@ -192,7 +187,8 @@ static int recordCallback(const void *inputBuffer,
                           unsigned long framesPerBuffer,
                           const PaStreamCallbackTimeInfo *timeInfo,
                           PaStreamCallbackFlags statusFlags,
-                          void *userData) {
+                          void *userData
+                          ){
   (void)outputBuffer;
   paTestData *data = (paTestData *)userData;
 
@@ -226,9 +222,7 @@ static int recordCallback(const void *inputBuffer,
     }
   }
   data->frameIndex +=
-      PaUtil_WriteRingBuffer(&data->ringBuffer,
-                             rptr,
-                             elementsToWrite);
+      PaUtil_WriteRingBuffer(&data->ringBuffer, rptr, elementsToWrite);
   fflush(stdout);
 
   return paContinue;
@@ -239,7 +233,8 @@ static int playCallback(const void *inputBuffer,
                         unsigned long framesPerBuffer,
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags,
-                        void *userData) {
+                        void *userData
+                        ){
 
   paTestData *data = (paTestData *)userData;
 
@@ -316,14 +311,15 @@ static void printDevices() {
 
 PaError RecordSound(PaStreamParameters inputParameters,
                     paTestData *data,
-                    PaError err) {
+                    PaError err
+                    ){
   PaStream *stream;
   err = Pa_OpenStream(&stream,
                       &inputParameters,
-                      NULL,
+                      NULL, 
                       SAMPLE_RATE,
                       FRAMES_PER_BUFFER,
-                      paClipOff,
+                      paClipOff, 
                       recordCallback, 
                       data);
 
@@ -357,10 +353,11 @@ PaError RecordSound(PaStreamParameters inputParameters,
 }
 PaError PlaySound(PaStreamParameters outputParameters,
                   paTestData *data,
-                  PaError err) {
+                  PaError err
+                  ){
   PaStream *stream;
   data->frameIndex = 0;
-  err = Pa_OpenStream(&stream, 
+  err = Pa_OpenStream(&stream,
                       NULL, /* no input */
                       &outputParameters,
                       SAMPLE_RATE, 
@@ -407,8 +404,9 @@ int main(int argc, char *argv[]) {
       printf("usage: parp [ -p | -r | -h][-f <file_name>]\n"
              "p:\tplay file\n"
              "r:\trecord to file(default file_name is a.raw)\n"
-             "h:\t help\n"
-             "f:\t flag to provide name of file to "
+             "d:\tdisplay list of devices\n"
+             "h:\thelp\n"
+             "f: <file_name>\tflag to provide name of file to "
              "record to/play from\n");
 
       exit(0);
@@ -462,7 +460,7 @@ int main(int argc, char *argv[]) {
   memcpy(data.file_name, file_name, MAX_FILE_NAME);
   unsigned numSamples;
   unsigned numBytes;
-  if(list_devices)
+  if (list_devices)
     printDevices();
   int inputDevice = 9;
   int outputDevice = 9;
@@ -486,9 +484,7 @@ int main(int argc, char *argv[]) {
   inputParameters.suggestedLatency =
       Pa_GetDeviceInfo(inputDevice)->defaultLowInputLatency;
   if (record) {
-    RecordSound(inputParameters,
-                &data,
-                err);
+    RecordSound(inputParameters, &data, err);
   }
   // playback
   memset(&outputParameters, 0, sizeof(outputParameters));
@@ -499,9 +495,7 @@ int main(int argc, char *argv[]) {
   outputParameters.suggestedLatency =
       Pa_GetDeviceInfo(outputDevice)->defaultLowOutputLatency;
   if (play) {
-    PlaySound(outputParameters,
-              &data,
-              err);
+    PlaySound(outputParameters, &data, err);
   }
   err = Pa_Terminate();
   checkErr(err);
