@@ -397,10 +397,11 @@ int main(int argc, char *argv[]) {
   int opt;
   bool record = false;
   bool play = false;
+  bool list_devices = false;
   bool provided_file = false;
   char *file_name = (char *)calloc(MAX_FILE_NAME, sizeof(char));
 
-  while ((opt = getopt(argc, argv, ":f:rph")) != -1) {
+  while ((opt = getopt(argc, argv, ":f:rphd")) != -1) {
     switch (opt) {
     case 'h':
       printf("usage: parp [ -p | -r | -h][-f <file_name>]\n"
@@ -425,6 +426,9 @@ int main(int argc, char *argv[]) {
       break;
     case 'p':
       play = true;
+      break;
+    case 'd':
+      list_devices = true;
       break;
     case ':':
       printf("please provide a file (.raw)\n");
@@ -458,7 +462,8 @@ int main(int argc, char *argv[]) {
   memcpy(data.file_name, file_name, MAX_FILE_NAME);
   unsigned numSamples;
   unsigned numBytes;
-  // printDevices();
+  if(list_devices)
+    printDevices();
   int inputDevice = 9;
   int outputDevice = 9;
   numSamples = NextPowerOf2((unsigned)(SAMPLE_RATE * 0.5 * NUM_CHANNELS));
