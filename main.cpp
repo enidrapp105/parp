@@ -401,7 +401,7 @@ int main(int argc, char *argv[]) {
   while ((opt = getopt(argc, argv, ":f:rphd")) != -1) {
     switch (opt) {
     case 'h':
-      printf("usage: parp [ -p | -r | -h][-f <file_name>]\n"
+      printf("usage: parp [-prdh][-f <file_name>]\n"
              "p:\tplay file\n"
              "r:\trecord to file(default file_name is a.raw)\n"
              "d:\tdisplay list of devices\n"
