@@ -392,20 +392,23 @@ PaError PlaySound(PaStreamParameters outputParameters,
 
 int main(int argc, char *argv[]) {
   int opt;
+  int selected_device;
   bool record = false;
   bool play = false;
   bool list_devices = false;
   bool provided_file = false;
+  bool spec_device_flag = false;
   char *file_name = (char *)calloc(MAX_FILE_NAME, sizeof(char));
 
-  while ((opt = getopt(argc, argv, ":f:rphd")) != -1) {
+  while ((opt = getopt(argc, argv, ":f:rphld:")) != -1) {
     switch (opt) {
     case 'h':
-      printf("usage: parp [-prdh][-f <file_name>]\n"
+      printf("usage: parp [-prlh][-d <device_number>][-f <file_name>]\n"
              "p:\tplay file\n"
              "r:\trecord to file(default file_name is a.raw)\n"
-             "d:\tdisplay list of devices\n"
-             "h:\thelp\n"
+             "l:\tdisplay list of devices\n"
+             "h:\tprint usage info\n"
+             "d: <device_number>\tspecify device for both input and output\n"
              "f: <file_name>\tflag to provide name of file to "
              "record to/play from\n");
 
@@ -425,11 +428,23 @@ int main(int argc, char *argv[]) {
     case 'p':
       play = true;
       break;
-    case 'd':
+    case 'l':
       list_devices = true;
       break;
+    case 'd':
+      if (!spec_device_flag){
+        selected_device = atoi(optarg);
+        spec_device_flag = true;
+      } else {
+        printf("TODO: implement input and output select\n");
+        exit(1);
+      }
+      if(selected_device < 0){
+        printf("ERROR: negative device or invalid device\n");
+      }
+      break;
     case ':':
-      printf("please provide a file (.raw)\n");
+      printf("please provide a file (.raw) or a device number\n");
       exit(1);
     case '?':
       printf("unkown option: %c\n", optopt);
@@ -478,7 +493,11 @@ int main(int argc, char *argv[]) {
   // record some audio
   memset(&inputParameters, 0, sizeof(inputParameters));
   inputParameters.channelCount = 2;
-  inputParameters.device = Pa_GetDefaultOutputDevice();
+  if(spec_device_flag){
+    inputParameters.device = selected_device;
+  } else {
+    inputParameters.device = Pa_GetDefaultOutputDevice();
+  }
   inputParameters.hostApiSpecificStreamInfo = NULL;
   inputParameters.sampleFormat = PA_SAMPLE_TYPE;
   inputParameters.suggestedLatency =
@@ -489,7 +508,11 @@ int main(int argc, char *argv[]) {
   // playback
   memset(&outputParameters, 0, sizeof(outputParameters));
   outputParameters.channelCount = 2;
-  outputParameters.device = Pa_GetDefaultOutputDevice();
+  if(spec_device_flag){
+    outputParameters.device = selected_device;
+  } else {
+    outputParameters.device = Pa_GetDefaultOutputDevice();
+  }  
   outputParameters.hostApiSpecificStreamInfo = NULL;
   outputParameters.sampleFormat = PA_SAMPLE_TYPE;
   outputParameters.suggestedLatency =
