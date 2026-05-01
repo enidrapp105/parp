@@ -1,0 +1,26 @@
+#!/bin/bash
+
+DEFAULT_SOURCE=$(pactl get-default-source)
+DEFAULT_SINK=$(pactl get-default-sink)
+echo "input: $DEFAULT_SOURCE"
+echo "output: $DEFAULT_SINK"
+
+#for playing audio through mic stream and output stream:
+#PULSE_SINK="combined" ./parp -p...
+pactl load-module module-null-sink \
+  sink_name=virtual_mic \
+  sink_properties=device.description=VirtualMic \
+  channels=2 rate=48000 format=s16le
+
+
+pactl load-module module-virtual-source \
+  source_name=virtual_mic_source \
+  master=virtual_mic.monitor \
+  source_properties=device.description=VirtualMic-Input \
+  channels=2 rate=48000 format=s16le
+
+
+
+
+pactl load-module module-loopback source=$DEFAULT_SOURCE sink=virtual_mic latency_msec=25
+pactl load-module module-combine-sink sink_name=combined slaves=virtual_mic,$DEFAULT_SINK
