@@ -12,7 +12,7 @@
 #include <cstring>
 
 #define MAX_FILE_NAME 2048
-#define SAMPLE_RATE 48000
+#define SAMPLE_RATE 44100
 #define FRAMES_PER_BUFFER 512
 #define NUM_WRITES_PER_BUFFER (4)
 #define NUM_SECONDS (10)
