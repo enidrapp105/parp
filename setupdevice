@@ -1,0 +1,6 @@
+#!/bin/bash
+
+pactl load-module module-null-sink sink_name=virtual_mic sink_properties=device.description=VirtualMic channels=2 rate=48000 format=s16le
+pactl load-module module-virtual-source source_name=virtual_mic_source master=virtual_mic.monitor source_properties=device.description=VirtualMic-Input channels=2 rate=48000 format=s16le
+pactl load-module module-loopback source=bluez_input.44_5E_CD_56_E8_04.0 sink=virtual_mic latency_msec=25
+pactl load-module module-combine-sink sink_name=combined slaves=virtual_mic,bluez_output.44_5E_CD_56_E8_04.1

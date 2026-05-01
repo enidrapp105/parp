@@ -12,7 +12,7 @@
 #include <cstring>
 
 #define MAX_FILE_NAME 2048
-#define SAMPLE_RATE 44100
+#define SAMPLE_RATE 48000
 #define FRAMES_PER_BUFFER 512
 #define NUM_WRITES_PER_BUFFER (4)
 #define NUM_SECONDS (10)
@@ -477,8 +477,6 @@ int main(int argc, char *argv[]) {
   unsigned numBytes;
   if (list_devices)
     printDevices();
-  int inputDevice = 9;
-  int outputDevice = 9;
   numSamples = NextPowerOf2((unsigned)(SAMPLE_RATE * 0.5 * NUM_CHANNELS));
   numBytes = numSamples * sizeof(SAMPLE);
   data.ringBufferData = (SAMPLE *)PaUtil_AllocateMemory(numBytes);
@@ -496,12 +494,12 @@ int main(int argc, char *argv[]) {
   if(spec_device_flag){
     inputParameters.device = selected_device;
   } else {
-    inputParameters.device = Pa_GetDefaultOutputDevice();
+    inputParameters.device = Pa_GetDefaultInputDevice();
   }
   inputParameters.hostApiSpecificStreamInfo = NULL;
   inputParameters.sampleFormat = PA_SAMPLE_TYPE;
   inputParameters.suggestedLatency =
-      Pa_GetDeviceInfo(inputDevice)->defaultLowInputLatency;
+      Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
   if (record) {
     RecordSound(inputParameters, &data, err);
   }
@@ -516,7 +514,7 @@ int main(int argc, char *argv[]) {
   outputParameters.hostApiSpecificStreamInfo = NULL;
   outputParameters.sampleFormat = PA_SAMPLE_TYPE;
   outputParameters.suggestedLatency =
-      Pa_GetDeviceInfo(outputDevice)->defaultLowOutputLatency;
+      Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
   if (play) {
     PlaySound(outputParameters, &data, err);
   }
