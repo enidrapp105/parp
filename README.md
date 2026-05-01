@@ -22,3 +22,8 @@ and
     ./parp -h
     
 for usage information
+
+## Additionally: 
+Because this is going to be developed into a soundboard
+Ive included some scripts to set up a virtual mic so the audio
+goes through the virtual mic
