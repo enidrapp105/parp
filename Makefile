@@ -1,6 +1,6 @@
 EXEC = parp
 CLIB = -I./lib/portaudio/include ./lib/portaudio/lib/.libs/libportaudio.a -lrt -lasound -ljack -pthread
-$(EXEC): ./lib/portaudio/src/common/pa_ringbuffer.c main.cpp
+$(EXEC): ./lib/portaudio/src/common/pa_ringbuffer.c parp.cpp main.cpp
 	g++ -g -Wall -Wno-unused-function -lpthread -o $@ $^ $(CLIB)
 
 install-deps:
