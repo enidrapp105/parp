@@ -3,7 +3,9 @@
 #include <string.h>
 
 
-
+//PULSE_SINK="combined" ./parp -p -f <file_name> 2>/dev/null for virtual mic output
+//or
+//./parp -r -f <file_name>
 static unsigned NextPowerOf2(unsigned val) {
   val--;
   val = (val >> 1) | val;
