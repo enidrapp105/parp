@@ -2,7 +2,7 @@
 
 #include <portaudio.h>
 #ifdef USE_CMAKE
-  #include pa_ringbuffer.h
+  #include "pa_ringbuffer.h"
 #else
   #include "lib/portaudio/src/common/pa_ringbuffer.h"
 #endif // USE_CMAKE
