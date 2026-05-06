@@ -1,7 +1,12 @@
 #pragma once
 
 #include <portaudio.h>
-#include "lib/portaudio/src/common/pa_ringbuffer.h"
+#ifdef USE_CMAKE
+  #include pa_ringbuffer.h
+#else
+  #include "lib/portaudio/src/common/pa_ringbuffer.h"
+#endif // USE_CMAKE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
