@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(parp)
 include(FetchContent)
-target_compile_definitions(parp PRIVATE USE_CMAKE)
 FetchContent_Declare(
   portaudio
   URL http://files.portaudio.com/archives/pa_stable_v190700_20210406.tgz
@@ -16,6 +15,8 @@ add_library(parp
   parp.cpp
   ${portaudio_SOURCE_DIR}/src/common/pa_ringbuffer.c
 )
+
+target_compile_definitions(parp PRIVATE USE_CMAKE)
 
 target_include_directories(parp PUBLIC
   ./
