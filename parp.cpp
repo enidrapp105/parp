@@ -1,4 +1,8 @@
-#include "lib/portaudio/src/common/pa_ringbuffer.h"
+#ifdef USE_CMAKE 
+  #include "pa_ringbuffer.h"
+#else
+  #include "lib/portaudio/src/common/pa_ringbuffer.h"
+#endif // DEBUG
 #include <portaudio.h>
 #include <pthread.h>
 
