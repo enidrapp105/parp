@@ -29,4 +29,5 @@ target_link_libraries(parp PRIVATE
   asound
   jack
   pthread
+  portaudio
 )
