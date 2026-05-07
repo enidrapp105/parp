@@ -16,17 +16,18 @@ int main(int argc, char *argv[]) {
   bool provided_file = false;
   bool spec_device_flag = false;
   char *file_name = (char *)calloc(MAX_FILE_NAME, sizeof(char));
-
+  //parp -r <file_name>
+  //parp -p <file_name>
   while ((opt = getopt(argc, argv, ":f:rphld:")) != -1) {
     switch (opt) {
     case 'h':
       printf("usage: parp [-prlh][-d <device_number>][-f <file_name>]\n"
-             "p:\tplay file\n"
-             "r:\trecord to file(default file_name is a.raw)\n"
-             "l:\tdisplay list of devices\n"
-             "h:\tprint usage info\n"
-             "d: <device_number>\tspecify device for both input and output\n"
-             "f: <file_name>\tflag to provide name of file to "
+             "-p\tplay file\n"
+             "-r\trecord to file(default file_name is a.raw)\n"
+             "-l\tdisplay list of devices\n"
+             "-h\tprint usage info\n"
+             "-d\tspecify device for both input and output\n"
+             "-f\tflag to provide name of file to "
              "record to/play from\n");
 
       exit(0);
