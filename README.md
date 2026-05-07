@@ -1,9 +1,11 @@
 # parp
 ## Port Audio Record and Play.
-This was made using https://github.com/PortAudio/portaudio
+This was made using [portaudio](https://github.com/PortAudio/portaudio)
 and basically reimplemented paex_record.c but for POSIX.
-I also referenced @chrisrouck on Youtube for the visualizer 
-so go check him out at https://www.youtube.com/@chrisrouck
+I also referenced [@chrisrouck](https://www.youtube.com/@chrisrouck)
+on Youtube for the visualizer so go check him out 
+You can also check out [parppui](https://github.com/enidrapp105/parpui) 
+for the frontend im working on that uses this
 
 This currently only plays/records 32-bit encoded raw audio with a sample rate of 44100Hz
 
