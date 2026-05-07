@@ -3,7 +3,7 @@
 This was made using [portaudio](https://github.com/PortAudio/portaudio)
 and basically reimplemented paex_record.c but for POSIX.
 I also referenced [@chrisrouck](https://www.youtube.com/@chrisrouck)
-on Youtube for the visualizer so go check him out .
+on Youtube for the visualizer so go check him out.
 You can also check out [parppui](https://github.com/enidrapp105/parpui) 
 for the frontend im working on that uses this
 
