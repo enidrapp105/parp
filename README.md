@@ -15,7 +15,7 @@ Then run:
 
     make
     
-and
+and for usage information:
 
     ./parp -h
     
