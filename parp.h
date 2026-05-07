@@ -52,6 +52,7 @@ typedef struct {
 } paTestData;
 
 void checkErr(PaError err);
+unsigned NextPowerOf2(unsigned val);
 void printDevices();
 
 PaError RecordSound(PaStreamParameters inputParameters,
