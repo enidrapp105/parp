@@ -331,10 +331,7 @@ PaError RecordSound(PaStreamParameters inputParameters,
   err = startThread(data, threadFunctionWriteToRawFile);
   checkErr(err);
 
-  while(data->threadSyncFlag) {
-    Pa_Sleep(10);
-  }
-  Pa_Sleep(50);
+ 
 
   err = Pa_StartStream(stream);
   checkErr(err);
@@ -376,6 +373,12 @@ PaError PlaySound(PaStreamParameters outputParameters,
       /* Start the file reading thread */
       err = startThread(data, threadFunctionReadFromRawFile);
       checkErr(err);
+
+      while(data->threadSyncFlag) {
+        Pa_Sleep(10);
+      }
+      Pa_Sleep(50);
+
       err = Pa_StartStream(stream);
       checkErr(err);
 
