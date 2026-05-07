@@ -26,8 +26,8 @@ and
 for usage information
 
 ## Additionally: 
-Because this is going to be developed into a soundboard
-Ive included some scripts to set up a virtual mic so the audio
+Because this is going to be developed into a soundboard,
+I've included some scripts to set up a virtual mic so the audio
 goes through the virtual mic
 
     ./loaddevices
