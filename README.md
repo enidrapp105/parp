@@ -23,7 +23,6 @@ and
 
     ./parp -h
     
-for usage information
 
 ## Additionally: 
 Because this is going to be developed into a soundboard,
