@@ -21,6 +21,7 @@ pactl set-default-source virtual_mic.monitor
 
 
 
-
+#DO NOT PUT SPACES BETWEEN ARGUMENTS IN BASH
 pactl load-module module-loopback source=$DEFAULT_SOURCE sink=virtual_mic latency_msec=25
-pactl load-module module-combine-sink sink_name=combined slaves=virtual_mic,$DEFAULT_SINK
+sleep 0.5 #virtual mic needs a little time to be fully initialized
+pactl load-module module-combine-sink sink_name=combined slaves=$DEFAULT_SINK,virtual_mic
