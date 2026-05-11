@@ -6,6 +6,15 @@
 #include <portaudio.h>
 #include <pthread.h>
 
+extern "C"{
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libswresample/swresample.h>
+#include <libavutil/opt.h>
+#include <libavutil/samplefmt.h>
+#include <libavutil/channel_layout.h>
+}
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -352,7 +361,121 @@ PaError RecordSound(PaStreamParameters inputParameters,
   return err;
 }
 
-void convert(char * in_file_name, char *raw_file_name);
+//UNUSED RIGHT NOW
+static char *convert(char * in_file_name, char *raw_file_name){
+  AVFormatContext *fmt_ctx = NULL;
+  AVCodecContext *codec_ctx = NULL;
+  SwrContext * swr = NULL;
+  AVPacket *pkt= av_packet_alloc();
+  AVFrame *frame = av_frame_alloc();
+  FILE *outfile = NULL;
+  int audio_idx = -1;
+
+  if (avformat_open_input(&fmt_ctx, in_file_name, NULL, NULL) < 0) {
+    fprintf(stderr, "Could not open input file\n");
+    exit(1);
+  }
+  avformat_find_stream_info(fmt_ctx, NULL);
+
+  for (int i = 0; i < fmt_ctx->nb_streams; i++) {
+    if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+      audio_idx = i;
+      break;
+    }
+  }
+  if (audio_idx < 0) {
+    fprintf(stderr, "No audio stream found\n");
+    exit(1);
+  }
+
+  AVCodecParameters *codecpar = fmt_ctx->streams[audio_idx]->codecpar;
+  const AVCodec *codec = avcodec_find_decoder(codecpar->codec_id);
+  codec_ctx = avcodec_alloc_context3(codec);
+  avcodec_parameters_to_context(codec_ctx, codecpar);
+  avcodec_open2(codec_ctx, codec, NULL);
+
+  const int out_sample_rate = 44100;
+  const enum AVSampleFormat out_fmt = AV_SAMPLE_FMT_FLT;
+
+  swr = swr_alloc();
+  av_opt_set_chlayout  (swr, "in_chlayout",   &codec_ctx->ch_layout,  0);
+  av_opt_set_chlayout  (swr, "out_chlayout",  &codec_ctx->ch_layout,  0);
+  av_opt_set_int       (swr, "in_sample_rate",  codec_ctx->sample_rate, 0);
+  av_opt_set_int       (swr, "out_sample_rate", out_sample_rate, 0);
+  av_opt_set_sample_fmt(swr, "in_sample_fmt",   codec_ctx->sample_fmt,  0);
+  av_opt_set_sample_fmt(swr, "out_sample_fmt",  out_fmt,      0);
+  swr_init(swr);
+
+
+  outfile = fopen(raw_file_name, "wb");
+  if (!outfile) {
+    fprintf(stderr, "Could not open output file\n");
+    exit(1);
+  }
+  
+  while (av_read_frame(fmt_ctx, pkt) >= 0) {
+    if (pkt->stream_index != audio_idx) {
+      av_packet_unref(pkt);
+      continue;
+    }
+
+    avcodec_send_packet(codec_ctx, pkt);
+    av_packet_unref(pkt);
+
+    while (avcodec_receive_frame(codec_ctx, frame) == 0) {
+      // Convert from planar float to interleaved S16
+      uint8_t *out_buf = NULL;
+      int out_samples = swr_get_out_samples(swr, frame->nb_samples);
+      int out_linesize;
+      av_samples_alloc(&out_buf, &out_linesize,
+                      codec_ctx->ch_layout.nb_channels,
+                      out_samples, out_fmt, 0);
+
+      out_samples = swr_convert(swr,
+                                &out_buf, out_samples,
+                                (const uint8_t **)frame->data,
+                                frame->nb_samples
+                                );
+
+      int bytes_per_sample = av_get_bytes_per_sample(out_fmt);
+      fwrite(out_buf, bytes_per_sample * codec_ctx->ch_layout.nb_channels, out_samples, outfile);
+      av_freep(&out_buf);
+      av_frame_unref(frame);
+    }
+  }
+
+  avcodec_send_packet(codec_ctx, NULL);
+  while (avcodec_receive_frame(codec_ctx, frame) == 0) {
+    uint8_t *out_buf = NULL;
+    int out_samples = swr_get_out_samples(swr, frame->nb_samples);
+    int out_linesize;
+    av_samples_alloc(&out_buf, &out_linesize,
+                    codec_ctx->ch_layout.nb_channels,
+                    out_samples, out_fmt, 0
+                    );
+    out_samples = swr_convert(swr, 
+                            &out_buf, 
+                            out_samples,
+                            (const uint8_t **)frame->data,
+                            frame->nb_samples
+                            );
+    fwrite(out_buf, 
+          2 * codec_ctx->ch_layout.nb_channels,
+          out_samples, 
+          outfile
+          );
+    av_freep(&out_buf);
+    av_frame_unref(frame);
+  }
+  //cleanup
+  if (outfile)   fclose(outfile);
+  swr_free(&swr);
+  avcodec_free_context(&codec_ctx);
+  avformat_close_input(&fmt_ctx);
+  av_packet_free(&pkt);
+  av_frame_free(&frame);
+  return raw_file_name;
+}
 
 PaError PlaySound(PaStreamParameters outputParameters,
                   paTestData *data,
