@@ -30,4 +30,8 @@ target_link_libraries(parp PRIVATE
   jack
   pthread
   portaudio
+  avformat
+  avcodec
+  avutil
+  swresample
 )
