@@ -6,7 +6,7 @@ for the frontend im working on that uses this
 This currently only plays/records 32-bit encoded raw audio with a sample rate of 44100Hz
 
 ## To run:
-clone the repository install dependencies:
+clone the repository and install dependencies:
 
     sudo apt-get install curl cmake clang pulseaudio libasound-dev libjack-dev ffmpeg libavformat-dev libavcodec-dev libavutil-dev libswresample-dev
 
