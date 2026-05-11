@@ -396,10 +396,11 @@ static char *convert(char * in_file_name, char *raw_file_name){
 
   const int out_sample_rate = 44100;
   const enum AVSampleFormat out_fmt = AV_SAMPLE_FMT_FLT;
+  AVChannelLayout stereo = AV_CHANNEL_LAYOUT_STEREO;
 
   swr = swr_alloc();
   av_opt_set_chlayout  (swr, "in_chlayout",   &codec_ctx->ch_layout,  0);
-  av_opt_set_chlayout  (swr, "out_chlayout",  &codec_ctx->ch_layout,  0);
+  av_opt_set_chlayout  (swr, "out_chlayout",  &stereo,  0);
   av_opt_set_int       (swr, "in_sample_rate",  codec_ctx->sample_rate, 0);
   av_opt_set_int       (swr, "out_sample_rate", out_sample_rate, 0);
   av_opt_set_sample_fmt(swr, "in_sample_fmt",   codec_ctx->sample_fmt,  0);
