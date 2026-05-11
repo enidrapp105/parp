@@ -8,7 +8,7 @@ This currently only plays/records 32-bit encoded raw audio with a sample rate of
 ## To run:
 clone the repository install dependencies:
 
-    sudo apt-get install curl cmake clang pulseaudio libasound-dev libjack-dev
+    sudo apt-get install curl cmake clang pulseaudio libasound-dev libjack-dev ffmpeg
     make install-deps
 
 Then run:

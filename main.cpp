@@ -18,6 +18,15 @@ static void print_help_message(){
   exit(1);
 }
 
+static bool file_exists(char* file_name){
+  bool exists = false;
+  if (FILE *file = fopen(file_name, "r")) {
+    exists = true;
+    fclose(file);
+  }
+  return exists;
+}
+
 int main(int argc, char *argv[]) {
   int opt;
   int selected_device;
@@ -27,10 +36,6 @@ int main(int argc, char *argv[]) {
   bool spec_device_flag = false;
   char *file_name_play = (char *)calloc(MAX_FILE_NAME, sizeof(char));
   char *file_name_record = (char *)calloc(MAX_FILE_NAME, sizeof(char));
-  //TODO:
-  //suggested usage:
-  //parp -r <file_name_record>
-  //parp -p <file_name_play>
   while ((opt = getopt(argc, argv, ":r:p:hld:")) != -1) {
     switch (opt) {
       case 'h':
@@ -72,16 +77,14 @@ int main(int argc, char *argv[]) {
         break;
       case ':':
         switch (optopt) {
-            case 'r':
-              file_record = true;
-              strncpy(file_name_record, "a.raw", MAX_FILE_NAME);
-              break;
-            case 'p':
-              printf("please provide a file (.raw)\n");
-              exit(1);
-            case 'd':
-              printf("please provide a device number\n");
-              exit(1);
+          case 'r':
+            printf("please provide a file (.raw)\n");
+          case 'p':
+            printf("please provide a file (.raw)\n");
+            exit(1);
+          case 'd':
+            printf("please provide a device number\n");
+            exit(1);
         }
         break;
       case '?':
@@ -89,17 +92,14 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
   }
+  if(!file_exists(file_name_record) || !file_exists(file_name_play)){
+    printf("ERROR file doesn't exist");
+    exit(1);
+  }
   if(!file_play && !file_record && !list_devices && !spec_device_flag){
     print_help_message();
   }
-  if (file_play) {
-    if (FILE *file = fopen(file_name_play, "r")) {
-      fclose(file);
-    } else {
-      printf("ERROR file not found\n");
-      exit(1);
-    }
-  }
+ 
   PaStreamParameters inputParameters;
   PaStreamParameters outputParameters;
   PaError err;
