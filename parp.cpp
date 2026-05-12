@@ -371,14 +371,15 @@ static char *convert(char * in_file_name, char *raw_file_name){
   FILE *outfile = NULL;
   int audio_idx = -1;
   // OPEN INPUT
+  do{
   if (avformat_open_input(&fmt_ctx, in_file_name, NULL, NULL) < 0) {
     fprintf(stderr, "Could not open input file\n");
-    exit(1);
+    break;
   }
   avformat_find_stream_info(fmt_ctx, NULL);
   
   // FIND AUDIO STREAM
-  for (int i = 0; i < fmt_ctx->nb_streams; i++) {
+  for (unsigned int i = 0; i < fmt_ctx->nb_streams; i++) {
     if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
       audio_idx = i;
       break;
@@ -386,7 +387,7 @@ static char *convert(char * in_file_name, char *raw_file_name){
   }
   if (audio_idx < 0) {
     fprintf(stderr, "No audio stream found\n");
-    exit(1);
+    break;
   }
   
   // SET UP DECODER
@@ -415,7 +416,7 @@ static char *convert(char * in_file_name, char *raw_file_name){
   outfile = fopen(raw_file_name, "wb");
   if (!outfile) {
     fprintf(stderr, "Could not open output file\n");
-    exit(1);
+    break;
   }
   // MAIN DECODE LOOP
   while (av_read_frame(fmt_ctx, pkt) >= 0) {
@@ -464,7 +465,7 @@ static char *convert(char * in_file_name, char *raw_file_name){
     int out_samples = swr_get_out_samples(swr, frame->nb_samples);
     int out_linesize;
     av_samples_alloc(&out_buf, &out_linesize,
-                    codec_ctx->ch_layout.nb_channels,
+                    stereo.nb_channels,
                     out_samples, out_fmt, 0
                     );
     out_samples = swr_convert(swr, 
@@ -473,15 +474,18 @@ static char *convert(char * in_file_name, char *raw_file_name){
                             (const uint8_t **)frame->data,
                             frame->nb_samples
                             );
+    int bytes_per_sample = av_get_bytes_per_sample(out_fmt);
     fwrite(out_buf, 
-          2 * codec_ctx->ch_layout.nb_channels,
+          bytes_per_sample * stereo.nb_channels,
           out_samples, 
           outfile
           );
     av_freep(&out_buf);
     av_frame_unref(frame);
   }
+  }while(0);
   //cleanup
+
   if (outfile)   fclose(outfile);
   swr_free(&swr);
   avcodec_free_context(&codec_ctx);
