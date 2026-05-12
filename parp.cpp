@@ -370,13 +370,14 @@ static char *convert(char * in_file_name, char *raw_file_name){
   AVFrame *frame = av_frame_alloc();
   FILE *outfile = NULL;
   int audio_idx = -1;
-
+  // OPEN INPUT
   if (avformat_open_input(&fmt_ctx, in_file_name, NULL, NULL) < 0) {
     fprintf(stderr, "Could not open input file\n");
     exit(1);
   }
   avformat_find_stream_info(fmt_ctx, NULL);
-
+  
+  // FIND AUDIO STREAM
   for (int i = 0; i < fmt_ctx->nb_streams; i++) {
     if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
       audio_idx = i;
@@ -387,13 +388,16 @@ static char *convert(char * in_file_name, char *raw_file_name){
     fprintf(stderr, "No audio stream found\n");
     exit(1);
   }
-
+  
+  // SET UP DECODER
   AVCodecParameters *codecpar = fmt_ctx->streams[audio_idx]->codecpar;
   const AVCodec *codec = avcodec_find_decoder(codecpar->codec_id);
   codec_ctx = avcodec_alloc_context3(codec);
   avcodec_parameters_to_context(codec_ctx, codecpar);
   avcodec_open2(codec_ctx, codec, NULL);
 
+
+  // SET UP RESAMPLER
   const int out_sample_rate = 44100;
   const enum AVSampleFormat out_fmt = AV_SAMPLE_FMT_FLT;
   AVChannelLayout stereo = AV_CHANNEL_LAYOUT_STEREO;
@@ -407,13 +411,13 @@ static char *convert(char * in_file_name, char *raw_file_name){
   av_opt_set_sample_fmt(swr, "out_sample_fmt",  out_fmt,      0);
   swr_init(swr);
 
-
+  // OPEN OUTPUT FILE
   outfile = fopen(raw_file_name, "wb");
   if (!outfile) {
     fprintf(stderr, "Could not open output file\n");
     exit(1);
   }
-  
+  // MAIN DECODE LOOP
   while (av_read_frame(fmt_ctx, pkt) >= 0) {
     if (pkt->stream_index != audio_idx) {
       av_packet_unref(pkt);
@@ -428,18 +432,27 @@ static char *convert(char * in_file_name, char *raw_file_name){
       uint8_t *out_buf = NULL;
       int out_samples = swr_get_out_samples(swr, frame->nb_samples);
       int out_linesize;
-      av_samples_alloc(&out_buf, &out_linesize,
-                      codec_ctx->ch_layout.nb_channels,
-                      out_samples, out_fmt, 0);
+      av_samples_alloc(&out_buf,
+                      &out_linesize,
+                      stereo.nb_channels,
+                      out_samples,
+                      out_fmt,
+                      0
+                      );
 
       out_samples = swr_convert(swr,
-                                &out_buf, out_samples,
+                                &out_buf,
+                                out_samples,
                                 (const uint8_t **)frame->data,
                                 frame->nb_samples
                                 );
 
       int bytes_per_sample = av_get_bytes_per_sample(out_fmt);
-      fwrite(out_buf, bytes_per_sample * codec_ctx->ch_layout.nb_channels, out_samples, outfile);
+      fwrite(out_buf, 
+            bytes_per_sample * stereo.nb_channels,
+            out_samples,
+            outfile
+            );
       av_freep(&out_buf);
       av_frame_unref(frame);
     }

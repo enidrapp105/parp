@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
   }
-  if(!file_exists(file_name_record) || !file_exists(file_name_play)){
+  if(!file_exists(file_name_record) && !file_exists(file_name_play)){
     printf("ERROR file doesn't exist");
     exit(1);
   }
