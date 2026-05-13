@@ -362,7 +362,7 @@ PaError RecordSound(PaStreamParameters inputParameters,
 }
 
 //UNUSED RIGHT NOW
-static char *convert(char * in_file_name, char *raw_file_name){
+char *convert(char * in_file_name, char *raw_file_name){
   AVFormatContext *fmt_ctx = NULL;
   AVCodecContext *codec_ctx = NULL;
   SwrContext * swr = NULL;
