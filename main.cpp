@@ -50,13 +50,7 @@ int main(int argc, char *argv[]) {
   bool spec_device_flag = false;
   char *file_name_play = (char *)calloc(MAX_FILE_NAME, sizeof(char));
   char *file_name_record = (char *)calloc(MAX_FILE_NAME, sizeof(char));
-  regex_t genregex;
-  regex_t mp3regex;
-  regex_t rawregex;
-  regcomp(&genregex, "^.+\\.(mp3|raw)$", 0);
-  regcomp(&mp3regex, "^.+\\.(mp3)$", 0);
-  regcomp(&rawregex, "^.+\\.(raw)$", 0);
-
+  
 
   while ((opt = getopt(argc, argv, ":r:p:hld:")) != -1) {
     switch (opt) {
@@ -121,7 +115,16 @@ int main(int argc, char *argv[]) {
   if(!file_play && !file_record && !list_devices && !spec_device_flag){
     print_help_message();
   }
+  regex_t genregex;
+  regex_t mp3regex;
+  regex_t rawregex;
+  regcomp(&genregex, "^.+\\.(mp3|raw)$", 0);
+  regcomp(&mp3regex, "^.+\\.(mp3)$", 0);
+  regcomp(&rawregex, "^.+\\.(raw)$", 0);
 
+  
+
+  
  
   PaStreamParameters inputParameters;
   PaStreamParameters outputParameters;
