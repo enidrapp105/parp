@@ -55,7 +55,7 @@ void checkErr(PaError err);
 unsigned NextPowerOf2(unsigned val);
 void printDevices();
 
-void convert(char * in_file_name, char *raw_file_name);
+char* convert(char * in_file_name, char *raw_file_name);
 
 PaError RecordSound(PaStreamParameters inputParameters,
                     paTestData *data,

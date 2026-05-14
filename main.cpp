@@ -29,7 +29,6 @@ static bool file_exists(char* file_name){
 
 static int valid_file(regex_t *regex, char* file_name){
   int ret;
-  char msgbuf[100];
   ret = regexec(regex, file_name, 0, NULL, 0);
   if(!ret)
     return ret;
@@ -121,8 +120,15 @@ int main(int argc, char *argv[]) {
   regcomp(&genregex, "^.+\\.(mp3|raw)$", 0);
   regcomp(&mp3regex, "^.+\\.(mp3)$", 0);
   regcomp(&rawregex, "^.+\\.(raw)$", 0);
+  bool play_is_mp3 = false;
+  bool play_is_raw = false;
 
-  
+  if(valid_file(&mp3regex, file_name_play) == 0){
+    play_is_mp3 = true;
+  }
+  if(valid_file(&rawregex, file_name_play) == 0){
+    play_is_raw = true;
+  }
 
   
  
