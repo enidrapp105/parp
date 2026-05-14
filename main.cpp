@@ -2,7 +2,7 @@
 #include "lib/portaudio/src/common/pa_util.h"
 #include <getopt.h>
 #include <string.h>
-
+#include <regex.h>
 
 //PULSE_SINK="combined" ./parp -p -f <file_name> 2>/dev/null for virtual mic output
 //or
@@ -27,6 +27,20 @@ static bool file_exists(char* file_name){
   return exists;
 }
 
+static int valid_file(regex_t *regex, char* file_name){
+  int ret;
+  char msgbuf[100];
+  ret = regexec(regex, file_name, 0, NULL, 0);
+  if(!ret)
+    return ret;
+  else if(ret == REG_NOMATCH){}
+  else{
+    fprintf(stderr, "REGEX ERROR OCCURRED\n");
+    exit(1);
+  }
+  return ret;
+}
+
 int main(int argc, char *argv[]) {
   int opt;
   int selected_device;
@@ -36,6 +50,14 @@ int main(int argc, char *argv[]) {
   bool spec_device_flag = false;
   char *file_name_play = (char *)calloc(MAX_FILE_NAME, sizeof(char));
   char *file_name_record = (char *)calloc(MAX_FILE_NAME, sizeof(char));
+  regex_t genregex;
+  regex_t mp3regex;
+  regex_t rawregex;
+  regcomp(&genregex, "^.+\\.(mp3|raw)$", 0);
+  regcomp(&mp3regex, "^.+\\.(mp3)$", 0);
+  regcomp(&rawregex, "^.+\\.(raw)$", 0);
+
+
   while ((opt = getopt(argc, argv, ":r:p:hld:")) != -1) {
     switch (opt) {
       case 'h':
@@ -99,6 +121,7 @@ int main(int argc, char *argv[]) {
   if(!file_play && !file_record && !list_devices && !spec_device_flag){
     print_help_message();
   }
+
  
   PaStreamParameters inputParameters;
   PaStreamParameters outputParameters;
