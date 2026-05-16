@@ -3,7 +3,8 @@
 You can also check out [parpui](https://github.com/enidrapp105/parpui) 
 for the frontend im working on that uses this
 
-This currently only plays/records 32-bit encoded raw audio with a sample rate of 44100Hz
+This currently records 32-bit encoded headerless raw audio with a sample rate of 44100Hz
+and plays mp3 files aswell as 32-bit encoded headerless raw audio files
 
 ## To run:
 clone the repository and install dependencies:
