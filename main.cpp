@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
           strncpy(file_name_record, optarg, MAX_FILE_NAME);
           file_record = true;
         } else {
-          printf("Multiple files?????\n");
+          fprintf(stderr, "Multiple files?????\n");
           exit(1);
         }
 
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
           strncpy(file_name_play, optarg, MAX_FILE_NAME);
           file_play = true;
         } else {
-          printf("Multiple files?????\n");
+          fprintf(stderr, "Multiple files?????\n");
           exit(1);
         }
 
