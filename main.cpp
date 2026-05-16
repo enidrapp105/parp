@@ -114,10 +114,8 @@ int main(int argc, char *argv[]) {
   if(!file_play && !file_record && !list_devices && !spec_device_flag){
     print_help_message();
   }
-  regex_t genregex;
   regex_t mp3regex;
   regex_t rawregex;
-  regcomp(&genregex, "^.+\\.(mp3|raw)$", 0);
   regcomp(&mp3regex, "^.+\\.(mp3)$", REG_EXTENDED);
   regcomp(&rawregex, "^.+\\.(raw)$", REG_EXTENDED);
 
