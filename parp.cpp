@@ -362,7 +362,7 @@ PaError RecordSound(PaStreamParameters inputParameters,
 }
 
 //UNUSED RIGHT NOW
-char *convert(char * in_file_name, char *raw_file_name){
+char *convert_raw_to_mp3(char *in_file_name, char *raw_file_name, size_t out_size){
   AVFormatContext *fmt_ctx = NULL;
   AVCodecContext *codec_ctx = NULL;
   SwrContext * swr = NULL;
@@ -413,6 +413,17 @@ char *convert(char * in_file_name, char *raw_file_name){
   swr_init(swr);
 
   // OPEN OUTPUT FILE
+  size_t base_len;
+  const char *dot = strrchr(in_file_name, '.');
+  if(dot){
+    base_len = (size_t)(dot - in_file_name);
+  }else {
+    base_len = strlen(in_file_name);
+  }
+
+  memcpy(raw_file_name, in_file_name, base_len);
+  memcpy(raw_file_name + base_len, ".raw", 5);
+
   outfile = fopen(raw_file_name, "wb");
   if (!outfile) {
     fprintf(stderr, "Could not open output file\n");
