@@ -118,17 +118,17 @@ int main(int argc, char *argv[]) {
   regex_t mp3regex;
   regex_t rawregex;
   regcomp(&genregex, "^.+\\.(mp3|raw)$", 0);
-  regcomp(&mp3regex, "^.+\\.(mp3)$", 0);
-  regcomp(&rawregex, "^.+\\.(raw)$", 0);
-  bool play_is_mp3 = false;
-  bool play_is_raw = false;
+  regcomp(&mp3regex, "^.+\\.(mp3)$", REG_EXTENDED);
+  regcomp(&rawregex, "^.+\\.(raw)$", REG_EXTENDED);
 
   if(valid_file(&mp3regex, file_name_play) == 0){
-    play_is_mp3 = true;
+    char raw_name[MAX_FILE_NAME];
+    convert_raw_to_mp3(file_name_play, raw_name, sizeof(raw_name));
+    snprintf(file_name_play, sizeof(raw_name), "%s", raw_name);
   }
-  if(valid_file(&rawregex, file_name_play) == 0){
-    play_is_raw = true;
-  }
+  if(valid_file(&rawregex, file_name_play) == 0){}
+
+
 
   
  
