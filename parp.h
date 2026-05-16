@@ -55,7 +55,9 @@ void checkErr(PaError err);
 unsigned NextPowerOf2(unsigned val);
 void printDevices();
 
-char* convert(char * in_file_name, char *raw_file_name);
+char* convert_raw_to_mp3(char *in_file_name,
+                      char *raw_file_name,
+                      size_t out_size);
 
 PaError RecordSound(PaStreamParameters inputParameters,
                     paTestData *data,
@@ -63,8 +65,8 @@ PaError RecordSound(PaStreamParameters inputParameters,
 
 
 PaError PlaySound(PaStreamParameters outputParameters,
-                    paTestData *data,
-                    PaError err);
+                  paTestData *data,
+                  PaError err);
  
  
 
