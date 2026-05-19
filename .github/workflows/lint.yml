@@ -14,4 +14,4 @@ jobs:
         run: sudo apt-get install -y clang-tidy
 
       - name: Run clang-tidy
-        run: clang-tidy src/*.cpp -- -std=c++17
+        run: clang-tidy *.cpp -- -std=c++17
