@@ -10,8 +10,13 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y clang-tidy portaudio19-dev
+          git clone https://github.com/PortAudio/portaudio.git
+
       - name: Install clang-tidy
         run: sudo apt-get install -y clang-tidy
 
       - name: Run clang-tidy
-        run: clang-tidy main.cpp -- -std=c++17
+        run: clang-tidy main.cpp -- -std=c++17 -I/usr/include -Iportaudio/src/common
