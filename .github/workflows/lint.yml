@@ -19,4 +19,4 @@ jobs:
         run: sudo apt-get install -y clang-tidy
 
       - name: Run clang-tidy
-        run: clang-tidy main.cpp -- -std=c++17 -I/usr/include -Iportaudio/src/common
+        run: clang-tidy main.cpp -- -std=c++17 -I/usr/include -Iportaudio/src/common -I./src/common
