@@ -12,11 +12,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get install -y clang-tidy portaudio19-dev
-          git clone https://github.com/PortAudio/portaudio.git
+          sudo apt-get install -y clang-tidy ffmpeg libavformat-dev libavcodec-dev libavutil-dev libswresample-dev
+          mkdir -p lib && curl -L http://files.portaudio.com/archives/pa_stable_v190700_20210406.tgz | tar -xz -C lib
+          cd lib/portaudio && ./configure && make -j
 
       - name: Install clang-tidy
         run: sudo apt-get install -y clang-tidy
 
-      - name: Run clang-tidy
-        run: clang-tidy main.cpp -- -std=c++17 -I/usr/include -Iportaudio/src/common -I./src/common
+      - name: Run clang-tidy        
+        run: clang-tidy main.cpp -- -std=c++17 -I./lib/portaudio/include -I./lib/portaudio/src/common/src/common -I./src/common
+
