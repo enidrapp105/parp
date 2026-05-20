@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
 
   if(valid_file(&mp3regex, file_name_play) == 0){
     char raw_name[MAX_FILE_NAME];
-    convert_raw_to_mp3(file_name_play, raw_name, sizeof(raw_name));
+    convert_mp3_to_raw(file_name_play, raw_name, sizeof(raw_name));
     snprintf(file_name_play, sizeof(raw_name), "%s", raw_name);
   }
   if(valid_file(&rawregex, file_name_play) == 0){}
