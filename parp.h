@@ -15,7 +15,7 @@
 #include <atomic>
 
 
-#define MAX_FILE_NAME 2048
+#define MAX_FILE_NAME 4096
 #define SAMPLE_RATE 44100
 #define NUM_CHANNELS (2)
 
@@ -55,7 +55,7 @@ void checkErr(PaError err);
 unsigned NextPowerOf2(unsigned val);
 void printDevices();
 
-char* convert_raw_to_mp3(char *in_file_name,
+char* convert_mp3_to_raw(char *in_file_name,
                       char *raw_file_name,
                       size_t out_size);
 

@@ -24,7 +24,6 @@ extern "C"{
 
 #include "parp.h"
 
-#define MAX_FILE_NAME 2048
 #define SAMPLE_RATE 44100
 #define FRAMES_PER_BUFFER 512
 #define NUM_WRITES_PER_BUFFER (4)
@@ -361,8 +360,7 @@ PaError RecordSound(PaStreamParameters inputParameters,
   return err;
 }
 
-//UNUSED RIGHT NOW
-char *convert_raw_to_mp3(char *in_file_name, char *raw_file_name, size_t out_size){
+char *convert_mp3_to_raw(char *in_file_name, char *raw_file_name, size_t out_size){
   AVFormatContext *fmt_ctx = NULL;
   AVCodecContext *codec_ctx = NULL;
   SwrContext * swr = NULL;
@@ -419,6 +417,11 @@ char *convert_raw_to_mp3(char *in_file_name, char *raw_file_name, size_t out_siz
     base_len = (size_t)(dot - in_file_name);
   }else {
     base_len = strlen(in_file_name);
+  }
+  if (base_len + 5 > out_size) {   // 5 = strlen(".raw") + null terminator
+    fprintf(stderr, "Output filename buffer too small (need %zu, have %zu)\n",
+            base_len + 5, out_size);
+    break;  
   }
 
   memcpy(raw_file_name, in_file_name, base_len);
