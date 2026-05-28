@@ -41,7 +41,7 @@ typedef unsigned char SAMPLE;
 #define PRINTF_S_FORMAT "%d"
 #endif
 
-typedef struct {
+typedef struct paTestData_t{
   unsigned frameIndex;
   std::atomic<int> threadSyncFlag;
   SAMPLE *ringBufferData;
@@ -49,6 +49,7 @@ typedef struct {
   FILE *file;
   char file_name[MAX_FILE_NAME];
   void *threadHandle;
+  bool visualizer = false;
 } paTestData;
 
 void checkErr(PaError err);
