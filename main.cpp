@@ -8,12 +8,13 @@
 //or
 //./parp -r -f <file_name>
 static void print_help_message(){
-  printf("usage: parp [-lh][-d <device_number>][-r | -r <record_file_name>][-p <play_file_name>]\n"
+  printf("usage: parp [-lhv][-d <device_number>][-r | -r <record_file_name>][-p <play_file_name>]\n"
         "-l\tdisplay list of devices\n"
         "-h\tprint usage info\n"
+        "-v\tenable visualizer\n"
         "-d\tspecify device for both input and output\n"
-        "-r\trecord to file(default record_file_name is a.raw)\n"
-        "-p\tplay file (default file is not provided)\n"
+        "-r\trecord to file\n"
+        "-p\tplay file\n"
         );
   exit(1);
 }
@@ -97,7 +98,6 @@ int main(int argc, char *argv[]) {
       case ':':
         switch (optopt) {
           case 'r':
-            printf("please provide a file (.raw)\n");
           case 'p':
             printf("please provide a file (.raw)\n");
             exit(1);
