@@ -46,12 +46,13 @@ int main(int argc, char *argv[]) {
   bool list_devices = false;
   bool file_play = false;
   bool file_record = false;
+  bool visualizer = false;
   bool spec_device_flag = false;
   char *file_name_play = (char *)calloc(MAX_FILE_NAME, sizeof(char));
   char *file_name_record = (char *)calloc(MAX_FILE_NAME, sizeof(char));
   
 
-  while ((opt = getopt(argc, argv, ":r:p:hld:")) != -1) {
+  while ((opt = getopt(argc, argv, ":r:p:d:hlv")) != -1) {
     switch (opt) {
       case 'h':
         print_help_message();
@@ -74,6 +75,9 @@ int main(int argc, char *argv[]) {
           exit(1);
         }
 
+        break;
+      case 'v':
+        visualizer = true;
         break;
       case 'l':
         list_devices = true;
@@ -136,6 +140,8 @@ int main(int argc, char *argv[]) {
   err = Pa_Initialize();
   checkErr(err);
   paTestData data = {0};
+  if(visualizer)
+    data.visualizer = true;
   memcpy(data.file_name, file_name_record, MAX_FILE_NAME);
   unsigned numSamples;
   unsigned numBytes;

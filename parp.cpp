@@ -206,31 +206,32 @@ static int recordCallback(const void *inputBuffer,
 
   const SAMPLE *rptr = (const SAMPLE *)inputBuffer;
   float *in = (float *)inputBuffer;
-  int dispSize = 50;
-  printf("\r");
-  float vol_l = 0;
-  float vol_r = 0;
-  for (unsigned long i = 0; i < framesPerBuffer * 2; i += 2) {
-    vol_l = max(vol_l, std::abs(in[i]));
-    vol_r = max(vol_r, std::abs(in[i + 1]));
-  }
-
-  for (int i = 0; i < dispSize; i++) {
-    float barProportion = i / (float)dispSize;
-    if (barProportion <= vol_l && barProportion <= vol_r) {
-      printf("█");
-    } else if (barProportion <= vol_l) {
-      printf("▀");
-    } else if (barProportion <= vol_r) {
-      printf("▄");
-    } else {
-      printf(" ");
+  if(data->visualizer){
+    int dispSize = 50;
+    printf("\r");
+    float vol_l = 0;
+    float vol_r = 0;
+    for (unsigned long i = 0; i < framesPerBuffer * 2; i += 2) {
+      vol_l = max(vol_l, std::abs(in[i]));
+      vol_r = max(vol_r, std::abs(in[i + 1]));
     }
-  }
-  data->frameIndex +=
-      PaUtil_WriteRingBuffer(&data->ringBuffer, rptr, elementsToWrite);
-  fflush(stdout);
 
+    for (int i = 0; i < dispSize; i++) {
+      float barProportion = i / (float)dispSize;
+      if (barProportion <= vol_l && barProportion <= vol_r) {
+        printf("█");
+      } else if (barProportion <= vol_l) {
+        printf("▀");
+      } else if (barProportion <= vol_r) {
+        printf("▄");
+      } else {
+        printf(" ");
+      }
+    }
+    data->frameIndex +=
+        PaUtil_WriteRingBuffer(&data->ringBuffer, rptr, elementsToWrite);
+    fflush(stdout);
+  }
   return paContinue;
 }
 
@@ -263,28 +264,30 @@ static int playCallback(const void *inputBuffer,
   (void)statusFlags;
   (void)userData;
   float *out = (float *)outputBuffer;
-  int dispSize = 50;
-  printf("\r");
-  float vol_l = 0;
-  float vol_r = 0;
-  for (unsigned long i = 0; i < framesPerBuffer * 2; i += 2) {
-    vol_l = max(vol_l, std::abs(out[i]));
-    vol_r = max(vol_r, std::abs(out[i + 1]));
-  }
-
-  for (int i = 0; i < dispSize; i++) {
-    float barProportion = i / (float)dispSize;
-    if (barProportion <= vol_l && barProportion <= vol_r) {
-      printf("█");
-    } else if (barProportion <= vol_l) {
-      printf("▀");
-    } else if (barProportion <= vol_r) {
-      printf("▄");
-    } else {
-      printf(" ");
+  if(data->visualizer){
+    int dispSize = 50;
+    printf("\r");
+    float vol_l = 0;
+    float vol_r = 0;
+    for (unsigned long i = 0; i < framesPerBuffer * 2; i += 2) {
+      vol_l = max(vol_l, std::abs(out[i]));
+      vol_r = max(vol_r, std::abs(out[i + 1]));
     }
+  
+    for (int i = 0; i < dispSize; i++) {
+      float barProportion = i / (float)dispSize;
+      if (barProportion <= vol_l && barProportion <= vol_r) {
+        printf("█");
+      } else if (barProportion <= vol_l) {
+        printf("▀");
+      } else if (barProportion <= vol_r) {
+        printf("▄");
+      } else {
+        printf(" ");
+      }
+    }
+    fflush(stdout);
   }
-  fflush(stdout);
   return data->threadSyncFlag ? paComplete : paContinue;
 }
 
