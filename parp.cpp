@@ -1,3 +1,8 @@
+//********************************************************
+// Author: Enid Rapp
+// Purpose: The Definitions for the functions in parp.h
+//
+
 #ifdef USE_CMAKE 
   #include "pa_ringbuffer.h"
 #else
@@ -548,6 +553,9 @@ PaError PlaySound(PaStreamParameters outputParameters,
         Pa_Sleep(1000);
       }
       checkErr(err);
+
+      pthread_join((pthread_t)(data->threadHandle), NULL);
+      data->threadHandle = 0;
     }
 
     err = Pa_CloseStream(stream);
