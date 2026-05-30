@@ -44,6 +44,7 @@ typedef unsigned char SAMPLE;
 typedef struct paTestData_t{
   unsigned frameIndex;
   std::atomic<int> threadSyncFlag;
+  std::atomic<bool> stopRequested;
   SAMPLE *ringBufferData;
   PaUtilRingBuffer ringBuffer;
   FILE *file;

@@ -124,6 +124,7 @@ static void *threadFunctionReadFromRawFile(void *ptr) {
   paTestData *pData = (paTestData *)ptr;
 
   while (1) {
+    if(pData->stopRequested) break;
     ring_buffer_size_t elementsInBuffer =
         PaUtil_GetRingBufferWriteAvailable(&pData->ringBuffer);
     if (elementsInBuffer >=
@@ -249,6 +250,7 @@ static int playCallback(const void *inputBuffer,
                         ){
 
   paTestData *data = (paTestData *)userData;
+  if(data->stopRequested) return paComplete;
 
   ring_buffer_size_t elementsToPlay =
       PaUtil_GetRingBufferReadAvailable(&data->ringBuffer);
@@ -549,8 +551,11 @@ PaError PlaySound(PaStreamParameters outputParameters,
       checkErr(err);
 
       /* The playback will end when EOF is reached */
-      while ((err = Pa_IsStreamActive(stream)) == 1) {
-        Pa_Sleep(1000);
+      while (true) {
+        err = Pa_IsStreamActive(stream);
+        if (err < 0) break;
+        if (err == 0) break;
+        Pa_Sleep(100);
       }
       checkErr(err);
 
