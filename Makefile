@@ -1,6 +1,6 @@
 EXEC = parp
 CFLAGS = -g -Wall -Wno-unused-function -I./lib/portaudio/include $(shell pkg-config --cflags libavformat libavcodec libavutil libswresample)
-LIBS = ./lib/portaudio/lib/.libs/libportaudio.a -lrt -lasound -ljack -pthread -lavformat -lavcodec -lavutil -lswresample -lavutil 
+LIBS = ./lib/portaudio/lib/.libs/libportaudio.a -lrt -lasound -ljack -pthread -lavformat -lavcodec -lswresample -lavutil 
 $(EXEC): ./lib/portaudio/src/common/pa_ringbuffer.c parp.cpp main.cpp
 	g++ $(CFLAGS) -o $@ $^ $(LIBS)
 

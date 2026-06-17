@@ -3,6 +3,8 @@
 // Purpose: The Definitions for the functions in parp.h
 //
 
+#include <cstdint>
+#include <libavutil/mathematics.h>
 #ifdef USE_CMAKE 
   #include "pa_ringbuffer.h"
 #else
@@ -295,7 +297,11 @@ static int playCallback(const void *inputBuffer,
     }
     fflush(stdout);
   }
-  return data->threadSyncFlag ? paComplete : paContinue;
+  if(data->threadSyncFlag &&
+    PaUtil_GetRingBufferReadAvailable(&data->ringBuffer) == 0) {
+    return paComplete;
+  }
+  return paContinue;
 }
 
 void printDevices() {
@@ -455,7 +461,10 @@ char *convert_mp3_to_raw(char *in_file_name, char *raw_file_name, size_t out_siz
     while (avcodec_receive_frame(codec_ctx, frame) == 0) {
       // Convert from planar float to interleaved S16
       uint8_t *out_buf = NULL;
-      int out_samples = swr_get_out_samples(swr, frame->nb_samples);
+      int64_t delay = swr_get_delay(swr, codec_ctx->sample_rate);
+      int in_count = delay + frame->nb_samples;
+      int out_samples = (int)((in_count * out_sample_rate + codec_ctx->sample_rate -1)
+                              / codec_ctx->sample_rate);
       int out_linesize;
       av_samples_alloc(&out_buf,
                       &out_linesize,
@@ -486,8 +495,12 @@ char *convert_mp3_to_raw(char *in_file_name, char *raw_file_name, size_t out_siz
   avcodec_send_packet(codec_ctx, NULL);
   while (avcodec_receive_frame(codec_ctx, frame) == 0) {
     uint8_t *out_buf = NULL;
-    int out_samples = swr_get_out_samples(swr, frame->nb_samples);
-    int out_linesize;
+    int64_t delay = swr_get_delay(swr, codec_ctx->sample_rate);
+    int in_count = delay + frame->nb_samples;
+    int out_samples = (int)((in_count * out_sample_rate + codec_ctx->sample_rate -1)
+                              / codec_ctx->sample_rate);
+    int out_linesize = 0;
+      (void)out_linesize;
     av_samples_alloc(&out_buf, &out_linesize,
                     stereo.nb_channels,
                     out_samples, out_fmt, 0
@@ -507,6 +520,32 @@ char *convert_mp3_to_raw(char *in_file_name, char *raw_file_name, size_t out_siz
     av_freep(&out_buf);
     av_frame_unref(frame);
   }
+  {
+    int64_t delay = swr_get_delay(swr, codec_ctx->sample_rate);
+    if (delay > 0) {
+      uint8_t *out_buf = NULL;
+      int out_linesize = 0;
+      (void)out_linesize;
+      int in_count = delay + frame->nb_samples;
+      int out_samples = (int)((in_count * out_sample_rate + codec_ctx->sample_rate -1)
+                              / codec_ctx->sample_rate);
+      out_samples = swr_convert(swr,
+                                &out_buf,
+                                out_samples,
+                                NULL,
+                                0);
+      if (out_samples > 0) {
+        int bytes_per_sample = av_get_bytes_per_sample(out_fmt);
+        fwrite(out_buf,
+               bytes_per_sample * stereo.nb_channels,
+               out_samples,
+               outfile);
+      }
+      av_freep(&out_buf);
+    }
+  }
+
+
   }while(0);
   //cleanup
 

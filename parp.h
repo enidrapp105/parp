@@ -51,6 +51,7 @@ typedef struct paTestData_t{
   char file_name[MAX_FILE_NAME];
   void *threadHandle;
   bool visualizer = false;
+  float volume = 1.0;
 } paTestData;
 
 void checkErr(PaError err);
