@@ -526,9 +526,15 @@ char *convert_mp3_to_raw(char *in_file_name, char *raw_file_name, size_t out_siz
       uint8_t *out_buf = NULL;
       int out_linesize = 0;
       (void)out_linesize;
-      int in_count = delay + frame->nb_samples;
+      int in_count = delay;
       int out_samples = (int)((in_count * out_sample_rate + codec_ctx->sample_rate -1)
                               / codec_ctx->sample_rate);
+      av_samples_alloc(&out_buf,
+                       &out_linesize,
+                       stereo.nb_channels,
+                       out_samples,
+                       out_fmt,
+                       0);
       out_samples = swr_convert(swr,
                                 &out_buf,
                                 out_samples,
