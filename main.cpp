@@ -111,14 +111,15 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
   }
-  if(!file_exists(file_name_record) && !file_exists(file_name_play)){
-    printf("ERROR file doesn't exist");
-    exit(1);
-  }
   if(!file_play && !file_record && !list_devices && !spec_device_flag){
     print_help_message();
   }
-  regex_t mp3regex;
+
+  if(!file_exists(file_name_play) && file_play){
+    printf("ERROR file doesn't exist\n");
+    exit(1);
+  }
+    regex_t mp3regex;
   regex_t rawregex;
   regcomp(&mp3regex, "^.+\\.(mp3)$", REG_EXTENDED);
   regcomp(&rawregex, "^.+\\.(raw)$", REG_EXTENDED);
