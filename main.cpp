@@ -1,14 +1,15 @@
 #include "parp.h"
 #include "lib/portaudio/src/common/pa_util.h"
+#include <cstdlib>
 #include <getopt.h>
 #include <string.h>
 #include <regex.h>
 
-//PULSE_SINK="combined" ./parp -p -f <file_name> 2>/dev/null for virtual mic output
+//PULSE_SINK="combined" ./parp -p <file_name> 2>/dev/null for virtual mic output
 //or
-//./parp -r -f <file_name>
+//./parp -r <file_name>
 static void print_help_message(){
-  printf("usage: parp [-lhv][-d <device_number>][-a <volume>][-r | -r <record_file_name>][-p <play_file_name>]\n"
+  fprintf(stdout, "usage: parp [-lhv][-d <device_number>][-a <volume>][-r | -r <record_file_name>][-p <play_file_name>]\n"
         "-l\tdisplay list of devices\n"
         "-h\tprint usage info\n"
         "-v\tenable visualizer\n"
@@ -17,7 +18,6 @@ static void print_help_message(){
         "-r\trecord to file\n"
         "-p\tplay file\n"
         );
-  exit(1);
 }
 
 static bool file_exists(char* file_name){
@@ -82,21 +82,23 @@ int main(int argc, char *argv[]) {
           spec_device_flag = true;
         } else {
           //TODO
-          printf("TODO: implement input and output select\n");
+          fprintf(stderr, "TODO: implement input and output select\n");
           exit(1);
         }
         if(selected_device < 0){
-          printf("ERROR: negative device or invalid device\n");
+          fprintf(stderr, "ERROR: negative device or invalid device\n");
+          exit(1);
         }
         break;
       case 'a':
         volume = atof(optarg);
         if(volume > 2.0f || volume < 0.0f){
-          printf("ERROR: negative volume or invalid volume\n");
+          fprintf(stderr, "ERROR: negative volume or invalid volume\n");
         }
         break;
       case 'h':
         print_help_message();
+        exit(0);
       case 'v':
         visualizer = true;
         break;
@@ -107,13 +109,13 @@ int main(int argc, char *argv[]) {
         switch (optopt) {
           case 'r':
           case 'p':
-            printf("please provide a file (.raw)\n");
+            fprintf(stderr, "please provide a file (.raw)\n");
             exit(1);
           case 'd':
-            printf("please provide a device number\n");
+            fprintf(stderr, "please provide a device number\n");
             exit(1);
           case 'a':
-            printf("please provide a volume for audio 0.0-2.0\n");
+            fprintf(stderr, "please provide a volume for audio 0.0-2.0\n");
             exit(1);
         }
         break;
@@ -124,10 +126,11 @@ int main(int argc, char *argv[]) {
   }
   if(!file_play && !file_record && !list_devices && !spec_device_flag){
     print_help_message();
+    exit(1);
   }
 
   if(!file_exists(file_name_play) && file_play){
-    printf("ERROR file doesn't exist\n");
+    fprintf(stderr, "ERROR file doesn't exist\n");
     exit(1);
   }
   regex_t mp3regex;
