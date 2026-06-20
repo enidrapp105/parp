@@ -250,9 +250,11 @@ static int playCallback(const void *inputBuffer,
                         PaStreamCallbackFlags statusFlags,
                         void *userData
                         ){
-
+  
   paTestData *data = (paTestData *)userData;
   if(data->stopRequested) return paComplete;
+
+  float gain = data->volume;
 
   ring_buffer_size_t elementsToPlay =
       PaUtil_GetRingBufferReadAvailable(&data->ringBuffer);
@@ -263,6 +265,10 @@ static int playCallback(const void *inputBuffer,
   data->frameIndex +=
       PaUtil_ReadRingBuffer(&data->ringBuffer, wptr, elementsToRead);
 
+  for (ring_buffer_size_t i = 0; i < elementsToRead; i++) {
+    wptr[i] *= gain;
+  }
+
   if (elementsToRead < (ring_buffer_size_t)(framesPerBuffer * NUM_CHANNELS)) {
     memset(wptr + elementsToRead, 0,
            (framesPerBuffer * NUM_CHANNELS - elementsToRead) * sizeof(SAMPLE));
@@ -272,15 +278,14 @@ static int playCallback(const void *inputBuffer,
   (void)timeInfo;
   (void)statusFlags;
   (void)userData;
-  float *out = (float *)outputBuffer;
   if(data->visualizer){
     int dispSize = 50;
     printf("\r");
     float vol_l = 0;
     float vol_r = 0;
     for (unsigned long i = 0; i < framesPerBuffer * 2; i += 2) {
-      vol_l = max(vol_l, std::abs(out[i]));
-      vol_r = max(vol_r, std::abs(out[i + 1]));
+      vol_l = max(vol_l, std::abs(wptr[i]));
+      vol_r = max(vol_r, std::abs(wptr[i + 1]));
     }
   
     for (int i = 0; i < dispSize; i++) {

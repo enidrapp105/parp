@@ -8,11 +8,12 @@
 //or
 //./parp -r -f <file_name>
 static void print_help_message(){
-  printf("usage: parp [-lhv][-d <device_number>][-r | -r <record_file_name>][-p <play_file_name>]\n"
+  printf("usage: parp [-lhv][-d <device_number>][-a <volume>][-r | -r <record_file_name>][-p <play_file_name>]\n"
         "-l\tdisplay list of devices\n"
         "-h\tprint usage info\n"
         "-v\tenable visualizer\n"
         "-d\tspecify device for both input and output\n"
+        "-a\tspecify audio volume 0.0-2.0\n"
         "-r\trecord to file\n"
         "-p\tplay file\n"
         );
@@ -44,6 +45,7 @@ static int valid_file(regex_t *regex, char* file_name){
 int main(int argc, char *argv[]) {
   int opt;
   int selected_device;
+  float volume = 1.0f;
   bool list_devices = false;
   bool file_play = false;
   bool file_record = false;
@@ -53,10 +55,8 @@ int main(int argc, char *argv[]) {
   char *file_name_record = (char *)calloc(MAX_FILE_NAME, sizeof(char));
   
 
-  while ((opt = getopt(argc, argv, ":r:p:d:hlv")) != -1) {
+  while ((opt = getopt(argc, argv, ":r:p:d:a:hlv")) != -1) {
     switch (opt) {
-      case 'h':
-        print_help_message();
       case 'r':
         if (!file_record) {
           strncpy(file_name_record, optarg, MAX_FILE_NAME);
@@ -75,25 +75,33 @@ int main(int argc, char *argv[]) {
           fprintf(stderr, "Multiple files?????\n");
           exit(1);
         }
-
-        break;
-      case 'v':
-        visualizer = true;
-        break;
-      case 'l':
-        list_devices = true;
         break;
       case 'd':
         if (!spec_device_flag){
           selected_device = atoi(optarg);
           spec_device_flag = true;
         } else {
+          //TODO
           printf("TODO: implement input and output select\n");
           exit(1);
         }
         if(selected_device < 0){
           printf("ERROR: negative device or invalid device\n");
         }
+        break;
+      case 'a':
+        volume = atof(optarg);
+        if(volume > 2.0f || volume < 0.0f){
+          printf("ERROR: negative volume or invalid volume\n");
+        }
+        break;
+      case 'h':
+        print_help_message();
+      case 'v':
+        visualizer = true;
+        break;
+      case 'l':
+        list_devices = true;
         break;
       case ':':
         switch (optopt) {
@@ -103,6 +111,9 @@ int main(int argc, char *argv[]) {
             exit(1);
           case 'd':
             printf("please provide a device number\n");
+            exit(1);
+          case 'a':
+            printf("please provide a volume for audio 0.0-2.0\n");
             exit(1);
         }
         break;
@@ -119,7 +130,7 @@ int main(int argc, char *argv[]) {
     printf("ERROR file doesn't exist\n");
     exit(1);
   }
-    regex_t mp3regex;
+  regex_t mp3regex;
   regex_t rawregex;
   regcomp(&mp3regex, "^.+\\.(mp3)$", REG_EXTENDED);
   regcomp(&rawregex, "^.+\\.(raw)$", REG_EXTENDED);
@@ -143,6 +154,7 @@ int main(int argc, char *argv[]) {
   paTestData data = {0};
   if(visualizer)
     data.visualizer = true;
+  data.volume = volume;
   memcpy(data.file_name, file_name_record, MAX_FILE_NAME);
   unsigned numSamples;
   unsigned numBytes;
