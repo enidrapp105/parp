@@ -30,9 +30,12 @@ goes through the virtual mic
 
     ./loaddevices
 
-aswell as an unloading script
+as well as an unloading script
 
     ./unloaddevices
+The virtual mic also need to be set up as an environment variable to be used:
+
+    PULSE_SINK="combined" ./parp -h
 ## Acknowledgements:
 This was made using [portaudio](https://github.com/PortAudio/portaudio)
 and basically reimplemented paex_record.c but for POSIX.
